@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Мастерская символов — экспорт</title>
+<link rel="stylesheet" href="/static/css/style.css">
+<script src="/static/js/text-assist.js" defer>
+</script>
+<script src="/static/js/script.js" defer>
+</script>
+</head>
+<body>
+<a class="skip" href="#workspace">К рабочей области</a>
+<header>
+<a class="brand" href="/">СИМВОЛ / ЭКСПОРТ</a>
+<span>Текст превращается в рисунок</span>
+</header>
+<main id="workspace">
+<section class="intro">
+<p class="eyebrow">Мастерская символов</p>
+<h1>Создайте. Сохраните.<br>Поделитесь.</h1>
+<p>Три шрифта, понятный выбор формата и готовый файл. Всё работает без регистрации.</p>
+</section>
+{{if .Error}}<p class="notice error" role="alert">{{.Error}}</p>{{end}}
+<div class="workspace">
+<section class="card">
+<h2>01. Ваш текст</h2>
+<form action="/symbol-art" method="post" id="generator-form">
+<label for="text-input">Текст рисунка</label>
+<textarea id="text-input" name="text" rows="4" maxlength="4096" required placeholder="Hello, World!" aria-describedby="input-help">{{.Text}}</textarea>
+<p id="input-help" class="hint">Печатные латинские символы, цифры, знаки и переводы строк. До 4096 байт; рисунок до 128 КиБ.</p>
+<div id="suggestions" aria-live="polite">
+</div>
+<label for="banner">Шрифт</label>
+<select id="banner" name="banner">
+<option value="standard" {{if eq .Banner "standard"}}selected{{end}}>Standard — классический</option>
+<option value="shadow" {{if eq .Banner "shadow"}}selected{{end}}>Shadow — объёмный</option>
+<option value="thinkertoy" {{if eq .Banner "thinkertoy"}}selected{{end}}>Thinkertoy — игровой</option>
+</select>
+<div class="actions">
+<button type="submit" id="generate">Создать рисунок</button>
+<button class="secondary" type="button" id="recommend-banner">Подобрать шрифт</button>
+<button class="secondary" type="button" id="variations">Идеи для текста</button>
+</div>
+<p id="assist-status" class="hint" role="status">
+</p>
+</form>
+</section>
+<section class="card result" aria-labelledby="result-title">
+<h2 id="result-title">02. Результат</h2>{{template "result.html" .}}{{template "export.html" .}}</section>
+</div>
+<section class="card insights">
+<h2>Ваша сессия</h2>
+<p id="insights" role="status">Статистика загрузок появится после первого экспорта.</p>
+<button type="button" class="secondary" id="refresh-insights">Обновить статистику</button>
+</section>
+<p id="status" class="notice" role="status" hidden>
+</p>
+</main>
+<footer>symbol-web-export · Go и обычный браузер · Ваш текст остаётся в запросе и файле</footer>
+</body>
+</html>

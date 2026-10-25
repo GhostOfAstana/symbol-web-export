@@ -1,0 +1,32 @@
+name: Проверки проекта
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Форматирование, анализ и конкурентные тесты
+        run: make audit
+      - name: Проверка генератора случайными входами
+        run: go test ./internal/ascii -run '^$' -fuzz FuzzGenerate -fuzztime=5s -parallel=2
+      - name: Сборка и HTTP-проверка
+        run: |
+          go build -trimpath -o "$RUNNER_TEMP/symbol-export" ./cmd/server
+          "$RUNNER_TEMP/symbol-export" > "$RUNNER_TEMP/server.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 50); do
+            if curl -fsS http://localhost:8080/healthz; then break; fi
+            sleep 0.2
+          done
+          curl -fsS http://localhost:8080/healthz
+          printf 'hello' > "$RUNNER_TEMP/expected.txt"
+          curl -fsS http://localhost:8080/export --data-urlencode 'content=hello' --data 'format=txt' -o "$RUNNER_TEMP/actual.txt"
+          cmp "$RUNNER_TEMP/expected.txt" "$RUNNER_TEMP/actual.txt"

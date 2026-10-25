@@ -1,0 +1,31 @@
+{{define "export.html"}}{{if .HasArt}}<div class="analysis">
+<h3>Подходящий формат: {{.Analysis.Recommended}}</h3>
+<p>{{.Analysis.Reason}}</p>
+<dl>
+<div>
+<dt>Байты</dt>
+<dd>{{.Analysis.Content.Characters}}</dd>
+</div>
+<div>
+<dt>Строки</dt>
+<dd>{{.Analysis.Content.Lines}}</dd>
+</div>
+<div>
+<dt>Ширина</dt>
+<dd>{{.Analysis.Content.Width}}</dd>
+</div>
+</dl>
+<p class="hint">Оценки: TXT {{index .Analysis.SizeEstimates "txt"}} Б · HTML {{index .Analysis.SizeEstimates "html"}} Б · PNG {{index .Analysis.SizeEstimates "png"}} Б. Фактический размер файла может отличаться от оценки.</p>
+</div>
+<form action="/export" method="post" id="export-form">
+<textarea name="content" hidden>{{.Art}}</textarea>
+<label for="format">Формат файла</label>
+<select id="format" name="format">
+<option value="txt" {{if eq .Analysis.Recommended "txt"}}selected{{end}}>TXT — простой текст</option>
+<option value="html" {{if eq .Analysis.Recommended "html"}}selected{{end}}>HTML — документ с цветом</option>
+<option value="pdf">PDF — страницы для печати</option>
+<option value="png">PNG — изображение</option>
+</select>
+<button type="submit" id="download">Скачать файл</button>
+<p class="hint">TXT точно сохраняет исходные байты. PDF и PNG монохромные; в PDF широкий рисунок делится на панели.</p>
+</form>{{end}}{{end}}

@@ -1,0 +1,8 @@
+/server
+/health-monitor
+*.out
+*.test
+.env
+session.cookie
+/coverage/
+/test-results/
